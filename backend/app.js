@@ -14,10 +14,45 @@ const dbConnection = mysql.createConnection({
 
 dbConnection.connect();
 
-dbConnection.query("SELECT * FROM Products.Food AS res", (error, results) => {
-  if (error) throw error;
+// dbConnection.query("SELECT * FROM Products.Food AS res", (error, results) => {
+//   if (error) throw error;
 
-  console.log(results);
+//   console.log(results);
+// });
+
+app.get("/api/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  let msg = {
+    success: false,
+    data: null,
+  };
+
+  if (isNaN(id)) {
+    msg.data = "id is NaN";
+    return res.status(404).json(msg);
+  }
+  const p = new Promise((resolve, reject) => {
+    dbConnection.query(
+      `SELECT * FROM Products.Food WHERE foodID=${id}`,
+      (error, results) => {
+        if (error) msg.data = "failed to fetch data";
+        else
+          msg = {
+            success: true,
+            data: results[0],
+          };
+
+        resolve(msg);
+      }
+    );
+  })
+    .then((dt) => res.status(200).json(dt))
+    .catch((err) => {
+      msg.data = "failed because of an error in promise";
+      return res.status(404).json(msg);
+    });
+
+  return await p;
 });
 
 app.get("/", (req, res) => {
