@@ -6,9 +6,25 @@ import {
   TableRow,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const CustomTable: React.FC = () => {
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    // axios.get("http://localhost:5000/food").then((response) => {
+    //   console.log(response);
+    // });
+    axios({
+      method: "get",
+      url: "/food",
+      baseURL: "http://localhost:5000",
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log("failed fetching: ", err));
+  }, []);
+
   return (
     <Table
       sx={{

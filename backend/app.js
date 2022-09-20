@@ -1,5 +1,6 @@
 const express = require("express");
 const mysql = require("mysql");
+const cors = require("cors");
 const app = express();
 
 const PORT = 5000;
@@ -20,7 +21,9 @@ dbConnection.connect();
 //   console.log(results);
 // });
 
-app.get("/api/:id", async (req, res) => {
+app.use(cors());
+
+app.get("/food/:id", async (req, res) => {
   const id = Number(req.params.id);
   let msg = {
     success: false,
@@ -45,6 +48,33 @@ app.get("/api/:id", async (req, res) => {
         resolve(msg);
       }
     );
+  })
+    .then((dt) => res.status(200).json(dt))
+    .catch((err) => {
+      msg.data = "failed because of an error in promise";
+      return res.status(404).json(msg);
+    });
+
+  return await p;
+});
+
+app.get("/food", async (req, res) => {
+  let msg = {
+    success: false,
+    data: null,
+  };
+
+  const p = new Promise((resolve, reject) => {
+    dbConnection.query(`SELECT * FROM Products.Food`, (error, results) => {
+      if (error) msg.data = "failed to fetch data";
+      else
+        msg = {
+          success: true,
+          data: results,
+        };
+
+      resolve(msg);
+    });
   })
     .then((dt) => res.status(200).json(dt))
     .catch((err) => {
