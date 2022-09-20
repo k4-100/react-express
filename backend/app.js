@@ -27,22 +27,22 @@ app.get("/food/:id", async (req, res) => {
   const id = Number(req.params.id);
   let msg = {
     success: false,
-    data: null,
+    content: null,
   };
 
   if (isNaN(id)) {
-    msg.data = "id is NaN";
+    msg.content = "id is NaN";
     return res.status(404).json(msg);
   }
   const p = new Promise((resolve, reject) => {
     dbConnection.query(
       `SELECT * FROM Products.Food WHERE foodID=${id}`,
       (error, results) => {
-        if (error) msg.data = "failed to fetch data";
+        if (error) msg.content = "failed to fetch content";
         else
           msg = {
             success: true,
-            data: results[0],
+            content: results[0],
           };
 
         resolve(msg);
@@ -51,7 +51,7 @@ app.get("/food/:id", async (req, res) => {
   })
     .then((dt) => res.status(200).json(dt))
     .catch((err) => {
-      msg.data = "failed because of an error in promise";
+      msg.content = "failed because of an error in promise";
       return res.status(404).json(msg);
     });
 
@@ -61,16 +61,16 @@ app.get("/food/:id", async (req, res) => {
 app.get("/food", async (req, res) => {
   let msg = {
     success: false,
-    data: null,
+    content: null,
   };
 
   const p = new Promise((resolve, reject) => {
     dbConnection.query(`SELECT * FROM Products.Food`, (error, results) => {
-      if (error) msg.data = "failed to fetch data";
+      if (error) msg.content = "failed to fetch content";
       else
         msg = {
           success: true,
-          data: results,
+          content: results,
         };
 
       resolve(msg);
@@ -78,7 +78,7 @@ app.get("/food", async (req, res) => {
   })
     .then((dt) => res.status(200).json(dt))
     .catch((err) => {
-      msg.data = "failed because of an error in promise";
+      msg.content = "failed because of an error in promise";
       return res.status(404).json(msg);
     });
 

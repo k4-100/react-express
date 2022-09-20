@@ -4,13 +4,26 @@ import {
   TableHead,
   TableBody,
   TableRow,
+  Typography,
+  Button,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+type FoodQuery = {
+  success: boolean;
+  content: {
+    foodID: number;
+    productName: string;
+    priceForUnit: number;
+    unit: string;
+    unitsStored: number;
+  }[];
+};
+
 const CustomTable: React.FC = () => {
-  const [data, setData] = useState({});
+  const [data, setData] = useState<FoodQuery | null>(null);
 
   useEffect(() => {
     // axios.get("http://localhost:5000/food").then((response) => {
@@ -21,9 +34,15 @@ const CustomTable: React.FC = () => {
       url: "/food",
       baseURL: "http://localhost:5000",
     })
-      .then((res) => console.log(res))
+      .then((res) => {
+        console.log(res);
+        console.log(res.data);
+        setData(res.data);
+      })
       .catch((err) => console.log("failed fetching: ", err));
   }, []);
+
+  if (data === null) return <Typography> fetching </Typography>;
 
   return (
     <Table
@@ -53,12 +72,28 @@ const CustomTable: React.FC = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        <TableRow>
+        {data.content.map(
+          ({ foodID, productName, priceForUnit, unit, unitsStored }, i) => (
+            <TableRow key={i}>
+              <TableCell>{foodID}</TableCell>
+              <TableCell>{productName}</TableCell>
+              <TableCell>{priceForUnit}</TableCell>
+              <TableCell>{unit}</TableCell>
+              <TableCell>{unitsStored}</TableCell>
+              <TableCell>
+                <Button variant="contained" color="info">
+                  X
+                </Button>
+              </TableCell>
+            </TableRow>
+          )
+        )}
+        {/* <TableRow>
           <TableCell>foodID</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>foodID</TableCell>
-        </TableRow>
+        </TableRow> */}
       </TableBody>
     </Table>
   );
